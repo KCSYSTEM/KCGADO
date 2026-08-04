@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>KC System Gado v1.20</title>
+<title>KC System Gado v1.21</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>">
   <!-- PWA / Add to Home Screen -->
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMTIzYTI0O3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTdhNDU7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0idXJsKCNiZykiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjMxMCIgZm9udC1zaXplPSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxOb3RvIENvbG9yIEVtb2ppIj7wn5CEPC90ZXh0Pgo8L3N2Zz4=">
@@ -417,7 +417,7 @@ input[type="number"]{-moz-appearance:textfield;}
 <div id="login-screen">
   <div class="login-glow"></div>
   <div class="login-box">
-    <div class="login-badge">🐄 KC System Gado v1.20</div>
+    <div class="login-badge">🐄 KC System Gado v1.21</div>
     <div class="login-title">Bem-vindo de<br>volta</div>
     <div class="login-sub">Acesse sua conta para continuar</div>
     <div class="field"><label>Usuário</label><input type="text" id="login-user" placeholder="seu.usuario" autocomplete="username" inputmode="text"></div>
@@ -473,7 +473,7 @@ input[type="number"]{-moz-appearance:textfield;}
     <div class="topbar-right">
       <!-- Versão + sync -->
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
-        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;">v1.20</div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;">v1.21</div>
         <div id="sync-indicator" style="display:flex;align-items:center;gap:3px;cursor:pointer;" onclick="forceSync()" title="Clique para sincronizar">
           <span id="sync-dot" style="width:6px;height:6px;border-radius:50%;background:#94a3b8;display:inline-block;"></span>
           <span id="sync-text" style="font-size:8px;color:rgba(255,255,255,0.35);white-space:nowrap;">—</span>
@@ -5760,6 +5760,37 @@ function renderLancamentos(){
   if(!param){tbody.innerHTML='<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text3);font-size:13px;">Selecione um parâmetro acima</td></tr>';return;}
   const cfg=LANC_PARAMS[param];
   const date=document.getElementById('lanc-date')?.value||'';
+  const isPiqueteParam=param==='suplementoQtd'||param==='salMineralQtd';
+
+  if(isPiqueteParam){
+    if(!piquetes.length){tbody.parentElement.querySelector('thead')?.remove();tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text3);font-size:13px;">Nenhum piquete cadastrado</td></tr>';return;}
+    const header=`<thead><tr>
+      <th style="min-width:110px;">Piquete</th>
+      <th style="min-width:60px;text-align:right;">Animais</th>
+      <th style="min-width:150px;">Quantidade total (kg)</th>
+      <th style="min-width:110px;color:var(--text3);">Por animal</th>
+    </tr></thead>`;
+    const rowsHtml=piquetes.map((p,i)=>{
+      const gt=tanks.filter(t=>t.groupId===p.id&&t.status!=='vendido'&&t.status!=='morto');
+      const count=gt.length;
+      const firstRec=count&&date?recForDate(gt[0].id,date,null):null;
+      const existingPer=firstRec?.[param];
+      const existingTotal=existingPer!=null?String(+(existingPer*count).toFixed(3)):'';
+      const disabled=count===0?'disabled':'';
+      const rowStyle=count===0?'opacity:0.45;':'';
+      return`<tr style="${rowStyle}">
+        <td><div class="lancamento-tank-name">${esc(p.nome)}</div></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);">${count}</td>
+        <td><input class="lancamento-input lanc-piquete-input" type="number" id="lanc-piq-${i}" data-piquete="${p.id}" data-count="${count}" step="0.001" inputmode="decimal" value="${existingTotal}" placeholder="—" ${disabled} oninput="updateLancPiqHelper(${i},${count})"></td>
+        <td id="lanc-piq-helper-${i}" style="font-size:12px;color:var(--ok);font-weight:600;font-family:'JetBrains Mono',monospace;">${existingTotal&&count?fNum(parseFloat(existingTotal)/count,3)+' kg/animal':'—'}</td>
+      </tr>`;
+    }).join('');
+    tbody.parentElement.querySelector('thead')?.remove();
+    tbody.insertAdjacentHTML('beforebegin',header);
+    tbody.innerHTML=rowsHtml;
+    document.getElementById('lanc-progress').style.display='none';
+    return;
+  }
 
   const activeAnimais=tanks.filter(t=>t.status!=='vendido'&&t.status!=='morto')
     .sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:'base'}));
@@ -5796,12 +5827,47 @@ function renderLancamentos(){
   document.getElementById('lanc-progress').style.display='none';
 }
 
+function updateLancPiqHelper(i,count){
+  const inp=document.getElementById('lanc-piq-'+i);
+  const el=document.getElementById('lanc-piq-helper-'+i);
+  if(!el||!inp)return;
+  const total=parseFloat(inp.value);
+  el.textContent=(!isNaN(total)&&total>0&&count>0)?fNum(total/count,3)+' kg/animal':'—';
+}
+
 async function saveLancamentos(){
   const param=document.getElementById('lanc-param')?.value;
   const date=document.getElementById('lanc-date')?.value;
   if(!param){showToast('Selecione um parâmetro','error');return;}
   if(!date){showToast('Selecione uma data','error');return;}
   const cfg=LANC_PARAMS[param];
+  const isPiqueteParam=param==='suplementoQtd'||param==='salMineralQtd';
+
+  if(isPiqueteParam){
+    const allInputs=[...document.querySelectorAll('.lanc-piquete-input[data-piquete]')];
+    const toSave=[];
+    const semAnimais=[];
+    allInputs.forEach(inp=>{
+      if(inp.value.trim()==='')return;
+      const total=parseFloat(inp.value);
+      if(isNaN(total))return;
+      const count=parseInt(inp.dataset.count);
+      if(count===0){semAnimais.push(piquetes.find(p=>p.id===inp.dataset.piquete)?.nome||'?');return;}
+      toSave.push({piqueteId:inp.dataset.piquete,total,count});
+    });
+    if(semAnimais.length){showToast('Piquete sem animais: '+semAnimais.join(', '),'error');return;}
+    if(!toSave.length){showToast('Nenhum valor preenchido','error');return;}
+    const conflicts=toSave.filter(item=>{
+      const gt=tanks.filter(t=>t.groupId===item.piqueteId&&t.status!=='vendido'&&t.status!=='morto');
+      return gt.some(t=>{const r=recForDate(t.id,date,null);return r&&r[param]!=null;});
+    });
+    if(conflicts.length>0){
+      showConfirm('Registros existentes',`Já existem registros de "${cfg.label}" em ${formatDate(date)}.\nDeseja sobrescrever?`,()=>_doSaveLancamentosPiquete(toSave,param,date));
+    } else {
+      _doSaveLancamentosPiquete(toSave,param,date);
+    }
+    return;
+  }
 
   const allInputs=[...document.querySelectorAll('.lancamento-input[data-tank]')];
   const toSave=[];
@@ -5875,6 +5941,50 @@ async function _doSaveLancamentos(toSave,param,date){
     showSaveProgress(saved,toSave.length);
   }
 
+  try{localStorage.setItem('kcg_records',JSON.stringify(records));}catch(e){console.warn('localStorage quota error',e);}
+  try{renderTankView();updateMapSub();}catch(e){console.warn('renderTankView error after save',e);}
+  prog.style.display='none';
+  showSaveDone(saved);
+  try{renderLancamentos();}catch(e){console.warn('renderLancamentos error after save',e);}
+}
+
+async function _doSaveLancamentosPiquete(toSave,param,date){
+  const prog=document.getElementById('lanc-progress');
+  prog.style.display='block';
+  const totalAnimals=toSave.reduce((s,item)=>s+item.count,0);
+  showSaveProgress(0,totalAnimals);
+  let saved=0;
+  const baseTs=Date.now();
+  for(const item of toSave){
+    const perAnimal=parseFloat((item.total/item.count).toFixed(3));
+    const gt=tanks.filter(t=>t.groupId===item.piqueteId&&t.status!=='vendido'&&t.status!=='morto');
+    for(const tank of gt){
+      const existing=recForDate(tank.id,date,null);
+      if(existing){
+        existing[param]=perAnimal;
+        existing.user=currentUser.name;existing.username=currentUser.username;
+        existing.timestamp=new Date(baseTs+saved).toISOString();
+        existing._changedFields=[param];
+        const idx=records.findIndex(r=>r.id===existing.id);
+        if(idx>=0)records[idx]=existing;
+        await saveTankRecord_sb(existing);
+      } else {
+        const newRec={
+          id:'lanc_'+baseTs+'_'+Math.random().toString(36).slice(2,6),
+          tankId:tank.id,tankName:tank.name,piqueteId:tank.groupId,date,
+          user:currentUser.name,username:currentUser.username,
+          timestamp:new Date(baseTs+saved).toISOString(),
+          obs:'',overridden:false,
+        };
+        newRec[param]=perAnimal;
+        newRec._changedFields=[param];
+        records.push(newRec);
+        await saveTankRecord_sb(newRec);
+      }
+      saved++;
+      showSaveProgress(saved,totalAnimals);
+    }
+  }
   try{localStorage.setItem('kcg_records',JSON.stringify(records));}catch(e){console.warn('localStorage quota error',e);}
   try{renderTankView();updateMapSub();}catch(e){console.warn('renderTankView error after save',e);}
   prog.style.display='none';
