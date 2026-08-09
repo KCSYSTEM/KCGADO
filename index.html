@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>KC System Gado v1.25</title>
+<title>KC System Gado v1.26</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>">
   <!-- PWA / Add to Home Screen -->
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMTIzYTI0O3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTdhNDU7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0idXJsKCNiZykiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjMxMCIgZm9udC1zaXplPSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxOb3RvIENvbG9yIEVtb2ppIj7wn5CEPC90ZXh0Pgo8L3N2Zz4=">
@@ -1560,7 +1560,7 @@ input[type="number"]{-moz-appearance:textfield;}
   <div style="background:var(--surface);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.35);text-align:center;">
     <div style="font-size:40px;margin-bottom:10px;">💾</div>
     <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;">Backup semanal</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;">É segunda-feira! Baixe um backup completo dos dados do sistema para manter uma cópia de segurança local.</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;">Nenhum backup foi realizado nos últimos 7 dias. Baixe um backup completo dos dados do sistema para manter uma cópia de segurança local.</div>
     <button id="backup-reminder-btn" onclick="downloadBackupFromReminder()" style="width:100%;padding:14px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">⬇️ Baixar backup agora</button>
     <button onclick="document.getElementById('backup-reminder-overlay').style.display='none'" style="width:100%;padding:10px;border:none;background:transparent;color:var(--text3);font-size:13px;cursor:pointer;">Lembrar mais tarde</button>
   </div>
@@ -3937,10 +3937,15 @@ function _mondayOfThisWeek(){
 }
 function checkBackupReminder(perfil){
   if(!isAdmin())return;
-  if(_nowBrasilia().getDay()!==1)return; // só na segunda-feira
-  const lastRaw=perfil?.last_backup_at??perfil?.lastBackupAt;
-  const last=lastRaw?new Date(lastRaw):null;
-  if(last&&last>=_mondayOfThisWeek())return; // este admin já baixou o backup esta semana
+  const sevenDaysAgo=new Date(_nowBrasilia());
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate()-7);
+  const allBackups=Object.values(perfisCache)
+    .filter(u=>u.role==='admin'&&u.lastBackupAt)
+    .map(u=>new Date(u.lastBackupAt));
+  const curLast=perfil?.last_backup_at??perfil?.lastBackupAt;
+  if(curLast)allBackups.push(new Date(curLast));
+  const lastBackup=allBackups.length?new Date(Math.max(...allBackups)):null;
+  if(lastBackup&&lastBackup>sevenDaysAgo)return;
   document.getElementById('backup-reminder-overlay').style.display='flex';
 }
 async function downloadBackupFromReminder(){
