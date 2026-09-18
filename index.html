@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>KC System Gado v1.28</title>
+<title>KC System Gado v1.29</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>">
   <!-- PWA / Add to Home Screen -->
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMTIzYTI0O3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTdhNDU7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0idXJsKCNiZykiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjMxMCIgZm9udC1zaXplPSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxOb3RvIENvbG9yIEVtb2ppIj7wn5CEPC90ZXh0Pgo8L3N2Zz4=">
@@ -406,7 +406,7 @@ input[type="number"]{-moz-appearance:textfield;}
 .animal-table tr:last-child td{border-bottom:none;}
 .animal-table tbody tr:active td{background:var(--accent-dim);}
 </style>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://fsxoyytkmzqonrgfapgm.supabase.co wss://fsxoyytkmzqonrgfapgm.supabase.co https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data: https:; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://ocrvwjfzwrjsibrllblk.supabase.co wss://ocrvwjfzwrjsibrllblk.supabase.co https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data: https:; object-src 'none';">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
@@ -416,7 +416,7 @@ input[type="number"]{-moz-appearance:textfield;}
 <div id="login-screen">
   <div class="login-glow"></div>
   <div class="login-box">
-    <div class="login-badge">🐄 KC System Gado v1.28</div>
+    <div class="login-badge">🐄 KC System Gado v1.29</div>
     <div class="login-title">Bem-vindo de<br>volta</div>
     <div class="login-sub">Acesse sua conta para continuar</div>
     <div class="field"><label>Usuário</label><input type="text" id="login-user" placeholder="seu.usuario" autocomplete="username" inputmode="text"></div>
@@ -472,7 +472,7 @@ input[type="number"]{-moz-appearance:textfield;}
     <div class="topbar-right">
       <!-- Versão + sync -->
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
-        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;">v1.28</div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;">v1.29</div>
         <div id="sync-indicator" style="display:flex;align-items:center;gap:3px;cursor:pointer;" onclick="forceSync()" title="Clique para sincronizar">
           <span id="sync-dot" style="width:6px;height:6px;border-radius:50%;background:#94a3b8;display:inline-block;"></span>
           <span id="sync-text" style="font-size:8px;color:rgba(255,255,255,0.35);white-space:nowrap;">—</span>
@@ -1683,8 +1683,8 @@ let _estoquePainelFiltro={inicio:'',fim:''};
 let confirmCallback=null;
 
 // ===== SUPABASE =====
-const SB_URL='https://fsxoyytkmzqonrgfapgm.supabase.co';
-const SB_KEY='sb_publishable_hc1kFz6iao7_YRfTnlB6xw_4gYcLE3A';
+const SB_URL='https://ocrvwjfzwrjsibrllblk.supabase.co';
+const SB_KEY='sb_publishable_oEiVytEjeDWgIUD3aY5ixA_tzWCIknb';
 const KC_OPERATOR_WA='5511999999999'; // WhatsApp do operador (país+DDD+número, sem +)
 
 // Suprime falso-positivo do warning de múltiplos GoTrueClient presente em v2.108+
